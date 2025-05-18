@@ -15,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   File? _image;
   bool _isLoading = false;
   final ApiService _apiService = ApiService();
+  String? _selectedDocType;
 
   Future<void> _takePicture() async {
     final ImagePicker picker = ImagePicker();
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (photo != null) {
       setState(() {
         _image = File(photo.path);
+        _selectedDocType = null;
       });
     }
   }
@@ -30,6 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void _removeImage() {
     setState(() {
       _image = null;
+      _selectedDocType = null;
+    });
+  }
+
+  // Select document type
+  void _selectDocType(String type) {
+    setState(() {
+      _selectedDocType = type;
     });
   }
 
@@ -40,12 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
+    if (_selectedDocType == null) {
+      _showSnackBar('Please select document type', isSuccess: false);
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final response = await _apiService.uploadImage(_image!);
+      final response = await _apiService.uploadImage(_image!, _selectedDocType!);
       
       if (response.statusCode == 200) {
         _showSnackBar('Image uploaded successfully', isSuccess: true);
@@ -167,6 +182,39 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                 ),
               ),
+              
+              // Document type selection section - only dikhega if image is selected
+              if (_image != null) ...[
+                const SizedBox(height: 20),
+                const Text(
+                  'Select Document Type:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildDocTypeOption(
+                        'Digilocker',
+                        Icons.folder_shared,
+                        _selectedDocType == 'Digilocker',
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildDocTypeOption(
+                        'Card',
+                        Icons.document_scanner,
+                        _selectedDocType == 'Card',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              
               ///response 
               const SizedBox(height: 24),
               if (_image != null)
@@ -193,6 +241,48 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
             ],
           ),
+        ),
+      ),
+    );
+  }
+  
+  ///documenttype widget
+  Widget _buildDocTypeOption(String title, IconData icon, bool isSelected) {
+    return InkWell(
+      onTap: () => _selectDocType(title),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected 
+                ? Theme.of(context).colorScheme.primary 
+                : Colors.grey[300]!,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: isSelected 
+                  ? Theme.of(context).colorScheme.primary 
+                  : Colors.grey[600],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected 
+                    ? Theme.of(context).colorScheme.primary 
+                    : Colors.grey[800],
+              ),
+            ),
+          ],
         ),
       ),
     );
