@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scan/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'screens/image_preview_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -38,6 +39,9 @@ class MainApp extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+        ),
+        iconTheme: const IconThemeData(
+          color: Color(0xFF4A6572),
         ),
       ),
       home: const HomeScreen(),

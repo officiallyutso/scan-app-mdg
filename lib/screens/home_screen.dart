@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scan/services/api_service.dart';
+import 'image_preview_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +29,27 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+  
+  /// Navigate to image preview screen for rotation
+  void _openImagePreview() {
+    if (_image != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImagePreviewScreen(
+            imagePath: _image!.path,
+          ),
+        ),
+      ).then((updatedImagePath) {
+        if (updatedImagePath != null) {
+          setState(() {
+            _image = File(updatedImagePath);
+          });
+        }
+      });
+    }
+  }
+  
   /// Removing the imae selected
   void _removeImage() {
     setState(() {
@@ -173,6 +195,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Icon(
                                       Icons.close,
                                       color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Add rotate button
+                            Positioned(
+                              bottom: 16,
+                              right: 16,
+                              child: Material(
+                                color: Colors.white.withOpacity(0.8),
+                                shape: const CircleBorder(),
+                                child: InkWell(
+                                  onTap: _openImagePreview,
+                                  customBorder: const CircleBorder(),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.rotate_right,
+                                      color: Color(0xFF4A6572),
                                     ),
                                   ),
                                 ),
