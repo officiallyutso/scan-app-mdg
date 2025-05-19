@@ -12,4 +12,5 @@ class Log(BaseModel):
 class People(BaseModel):
     count: int
     people_in: List[Person]
+    people_out: List[Person]
     logs: List[Log]

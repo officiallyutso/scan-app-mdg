@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   final ApiService _apiService = ApiService();
   String? _selectedDocType;
+  Map<String, dynamic>? _personDetails;
 
   Future<void> _takePicture() async {
     final ImagePicker picker = ImagePicker();
@@ -62,11 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   
-  /// Removing the imae selected
+  /// Removing the image selected
   void _removeImage() {
     setState(() {
       _image = null;
       _selectedDocType = null;
+      _personDetails = null;
     });
   }
 
@@ -91,18 +93,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _isLoading = true;
+      _personDetails = null;
     });
 
     try {
       final response = await _apiService.uploadImage(_image!, _selectedDocType!);
       
       if (response['success']) {
-        // Show success message with Aadhar number
         _showSnackBar(
-          'Registration successful! Aadhar: ${response['aadharNumber']}', 
+          'Registration successful!', 
           isSuccess: true
         );
-        _removeImage();
+        
+        // Get person details from the backend
+        try {
+          final detailsResponse = await _apiService.getPersonDetails(response['aadharNumber']);
+          setState(() {
+            _personDetails = detailsResponse;
+          });
+        } catch (e) {
+          print('Error fetching person details: $e');
+          setState(() {
+            _personDetails = {
+              'aadharNumber': response['aadharNumber'],
+              'name': 'Not available',
+              'dob': 'Not available',
+              'gender': 'Not available',
+            };
+          });
+        }
+        
       } else {
         _showSnackBar('Failed to upload image: ${response['message']}', isSuccess: false);
       }
@@ -126,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
         margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 5), ///please edit as per preference
+        duration: const Duration(seconds: 5), ///please edit as per your preference phoenix
       ),
     );
   }
@@ -258,8 +278,55 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               
+              // Person details section - show after successful scan
+              if (_personDetails != null) ...[
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Person Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A6572),
+                        ),
+                      ),
+                      const Divider(height: 24),
+                      _buildDetailRow('Aadhar Number', _personDetails!['aadharNumber'] ?? 'Not available'),
+                      
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            onPressed: _removeImage,
+                            icon: const Icon(Icons.refresh, color: Colors.blue),
+                            label: const Text('Scan New', style: TextStyle(color: Colors.blue)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              
               // Document type selection section - only dikhega if image is selected
-              if (_image != null) ...[
+              if (_image != null && _personDetails == null) ...[
                 const SizedBox(height: 20),
                 const Text(
                   'Select Document Type:',
@@ -359,6 +426,37 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+  
+  ///widegte for person details
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

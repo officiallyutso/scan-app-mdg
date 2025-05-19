@@ -7,7 +7,6 @@ class ApiService {
   final String _baseUrl = 'http://10.0.2.2:8000';
 
   Future<Map<String, dynamic>> uploadImage(File image, String documentType) async {
-    /////isdigital boolean
     final bool isDigital = documentType == 'Digilocker';
     
     try {
@@ -17,8 +16,7 @@ class ApiService {
       );
       
       /////reading fileas bytes
-      final bytes = await image.readAsBytes();
-      
+      final bytes = await image.readAsBytes();      
       // Use a simpler filename to avoid path issues
       final originalFilename = image.path.split('/').last;
       final extension = originalFilename.split('.').last;
@@ -55,20 +53,32 @@ class ApiService {
         try {
           final dynamic responseData = jsonDecode(response.body);
           if (responseData is List && responseData.length >= 1) {
-            // If it's a list/tuple, the first element should be the aadhar number
+            final String aadharNumber = responseData[0].toString();
+            final String name = responseData.length > 1 ? responseData[1].toString() : 'Not available';
+            
             return {
               'success': true,
-              'aadharNumber': responseData[0].toString(),
+              'aadharNumber': aadharNumber,
+              'name': name,
+              'dob': 'Not available',  /////phoenix these are dump details for now, may add if you want
+              'gender': 'Not available',
             };
-          } else if (responseData is Map) {
-            return {
-              'success': true,
-              'aadharNumber': responseData['aadhar'] ?? responseData.toString(),
-            };
-          } else {
+          // } else if (responseData is Map) {
+          //   return {
+          //     'success': true,
+          //     'aadharNumber': responseData['aadhar'] ?? responseData['aadhar_number'] ?? 'Not available',
+          //     'name': responseData['name'] ?? responseData['full_name'] ?? 'Not available',
+          //     'dob': responseData['dob'] ?? 'Not available',
+          //     'gender': responseData['gender'] ?? responseData['sex'] ?? 'Not available',
+          //   };
+          } 
+          else {
             return {
               'success': true,
               'aadharNumber': responseData.toString(),
+              'name': 'Not available',
+              'dob': 'Not available',
+              'gender': 'Not available',
             };
           }
         } catch (e) {
@@ -90,6 +100,15 @@ class ApiService {
         }
       } else {
         print('Error response: ${response.statusCode} - ${response.body}');
+        
+        //phoenix please add endpoint for the error details
+        if (response.body.contains("Person already exists")) {
+          return {
+            'success': false,
+            'message': 'Person already exists in the system',
+          };
+        }
+        
         return {
           'success': false,
           'message': 'Failed with status code: ${response.statusCode}',
@@ -133,5 +152,17 @@ class ApiService {
         'is_in': isEntering,
       }),
     );
+  }
+
+  // Get person details after successful registration
+  Future<Map<String, dynamic>> getPersonDetails(String aadharNumber) async {
+    try {
+      return {
+        'aadharNumber': aadharNumber, ///other details keliye pelase add in endpoint
+      };
+    } catch (e) {
+      print('Error getting person details: $e');
+      throw Exception('Failed to get person details');
+    }
   }
 }
