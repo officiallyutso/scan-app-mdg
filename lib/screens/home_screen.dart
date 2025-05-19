@@ -30,6 +30,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
   
+  Future<void> _pickImageFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+        _selectedDocType = null;
+      });
+    }
+  }
+  
   /// Navigate to image preview screen for rotation
   void _openImagePreview() {
     if (_image != null) {
@@ -84,11 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final response = await _apiService.uploadImage(_image!, _selectedDocType!);
       
-      if (response.statusCode == 200) {
-        _showSnackBar('Image uploaded successfully', isSuccess: true);
-        _removeImage(); 
+      if (response['success']) {
+        // Show success message with Aadhar number
+        _showSnackBar(
+          'Registration successful! Aadhar: ${response['aadharNumber']}', 
+          isSuccess: true
+        );
+        _removeImage();
       } else {
-        _showSnackBar('Failed to upload image: ${response.statusCode}', isSuccess: false);
+        _showSnackBar('Failed to upload image: ${response['message']}', isSuccess: false);
       }
     } catch (e) {
       _showSnackBar('Error: ${e.toString()}', isSuccess: false);
@@ -137,7 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 1,
                     ),
                   ),
-                  ///image m
                   child: _image == null
                       ? Center(
                           child: Column(
@@ -157,16 +172,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               const SizedBox(height: 24),
-                              ElevatedButton.icon(
-                                onPressed: _takePicture,
-                                icon: const Icon(Icons.camera_alt),
-                                label: const Text('Take Picture'),
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
+                              
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton.icon(
+                                    onPressed: _takePicture,
+                                    icon: const Icon(Icons.camera_alt),
+                                    label: const Text('Take Picture'),
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(width: 16),
+                                  ElevatedButton.icon(
+                                    onPressed: _pickImageFromGallery,
+                                    icon: const Icon(Icons.photo_library),
+                                    label: const Text('Upload'),
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -200,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
-                            // Add rotate button
+                            ////rotate button
                             Positioned(
                               bottom: 16,
                               right: 16,
