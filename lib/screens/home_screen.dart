@@ -156,6 +156,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Scan Image'),
+        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
       body: SafeArea(
         child: Padding(
@@ -172,6 +175,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.grey[300]!,
                       width: 1,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: _image == null
                       ? Center(
@@ -189,34 +200,63 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(height: 24),
-                              
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              const SizedBox(height: 32),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   ElevatedButton.icon(
                                     onPressed: _takePicture,
-                                    icon: const Icon(Icons.camera_alt),
-                                    label: const Text('Take Picture'),
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
+                                    icon: const Icon(Icons.camera_alt, size: 28, color: Color.fromRGBO(242, 241, 241, 1)),
+                                    label: const Text(
+                                      'Take Picture',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color.fromRGBO(255, 255, 255, 1),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  ElevatedButton.icon(
-                                    onPressed: _pickImageFromGallery,
-                                    icon: const Icon(Icons.photo_library),
-                                    label: const Text('Upload'),
                                     style: ElevatedButton.styleFrom(
+                                      backgroundColor: Theme.of(context).colorScheme.primary,
+                                      foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
+                                        horizontal: 32,
+                                        vertical: 16,
                                       ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      elevation: 3,
+                                      minimumSize: const Size(240, 56),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  OutlinedButton.icon(
+                                    onPressed: _pickImageFromGallery,
+                                    icon: const Icon(Icons.photo_library, size: 28),
+                                    label: const Text(
+                                      'Upload from Gallery',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: Theme.of(context).colorScheme.primary,
+                                      side: BorderSide(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        width: 2,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 32,
+                                        vertical: 16,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      minimumSize: const Size(240, 56),
                                     ),
                                   ),
                                 ],
@@ -282,15 +322,15 @@ class _HomeScreenState extends State<HomeScreen> {
               if (_personDetails != null) ...[
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.2),
                         spreadRadius: 1,
-                        blurRadius: 4,
+                        blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ],
@@ -298,15 +338,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Person Details',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF4A6572),
-                        ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person_outline,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            'Person Details',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF4A6572),
+                            ),
+                          ),
+                        ],
                       ),
-                      const Divider(height: 24),
+                      const Divider(height: 24, thickness: 1),
                       _buildDetailRow('Aadhar Number', _personDetails!['aadharNumber'] ?? 'Not available'),
                       
                       const SizedBox(height: 16),
@@ -316,7 +366,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           TextButton.icon(
                             onPressed: _removeImage,
                             icon: const Icon(Icons.refresh, color: Colors.blue),
-                            label: const Text('Scan New', style: TextStyle(color: Colors.blue)),
+                            label: const Text('Scan New', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w600)),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -325,41 +381,71 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
               
-              // Document type selection section - only dikhega if image is selected
+              // Document type selection section
               if (_image != null && _personDetails == null) ...[
                 const SizedBox(height: 20),
-                const Text(
-                  'Select Document Type:',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDocTypeOption(
-                        'Digilocker',
-                        Icons.folder_shared,
-                        _selectedDocType == 'Digilocker',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.document_scanner_outlined,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Select Document Type:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildDocTypeOption(
-                        'Card',
-                        Icons.document_scanner,
-                        _selectedDocType == 'Card',
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildDocTypeOption(
+                              'Digilocker',
+                              Icons.folder_shared,
+                              _selectedDocType == 'Digilocker',
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildDocTypeOption(
+                              'Card',
+                              Icons.document_scanner,
+                              _selectedDocType == 'Card',
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
               
-              ///response 
+              // Send button
               const SizedBox(height: 24),
-              if (_image != null)
+              if (_image != null && _personDetails == null)
                 ElevatedButton.icon(
                   onPressed: _isLoading ? null : _sendImage,
                   icon: _isLoading
@@ -373,9 +459,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         )
                       : const Icon(Icons.send),
-                  label: Text(_isLoading ? 'Sending...' : 'Send Image'),
+                  label: Text(
+                    _isLoading ? 'Sending...' : 'Send Image',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 3,
                   ),
                 )
               else
@@ -392,6 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildDocTypeOption(String title, IconData icon, bool isSelected) {
     return InkWell(
       onTap: () => _selectDocType(title),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
@@ -403,6 +500,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 : Colors.grey[300]!,
             width: isSelected ? 2 : 1,
           ),
+          boxShadow: isSelected ? [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ] : null,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
