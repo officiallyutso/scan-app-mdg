@@ -1,3 +1,3 @@
-# scan
+# Scan App
 
-A new Flutter project.
+Test application for MDGSPACE
