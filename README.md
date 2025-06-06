@@ -9,7 +9,7 @@ These are the must-have stats for your GitHub profile. Feel free to select one o
 </div>
 
 <div align="center">
-    <img src="https://github-contribution-stats.vercel.app/api/?username=officiallyutso&theme=radical&layout=compact" alt="Hoang Son's GitHub Contributions" />
+    <img src="https://camo.githubusercontent.com/9adea6d5e35296a9a112cecc0ddac511f40c86c5dc4c529cb63bbd870363a7e4/68747470733a2f2f6769746875622d636f6e747269627574696f6e2d73746174732e76657263656c2e6170702f6170692f3f757365726e616d653d6f6666696369616c6c797574736f267468656d653d7261646963616c266c61796f75743d636f6d70616374" alt="Hoang Son's GitHub Contributions" />
 </div>
 
 <div align="center">
