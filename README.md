@@ -19,9 +19,10 @@ These are the must-have stats for your GitHub profile. Feel free to select one o
 <div align="center">
     <img src="https://awesome-github-stats.azurewebsites.net/user-stats/officiallyutso?cardType=level&theme=radical&preferLogin=false" alt="My Awesome Stats" />
 </div>
-
+<div align="center">
 
 ![Officiallyutso's Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=Officiallyutso&theme=vue-dark&show_icons=true&hide_border=true&layout=compact)
+</div>
 
 
 <div align="center">
